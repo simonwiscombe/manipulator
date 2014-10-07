@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<meta name="description" content="Official interactive music video for Ty Segall's Manipulator" />
+<meta name="keywords" content="Ty,Segall,Manipulator,interactive,music,video" />
+<meta name="author" content="Simon Wiscombe, Ty Segall, Drag City" />
+
+<meta property="og:image" content="promoShot.jpg" />
+
+<title>MANIPULATOR //// Ty Segall Interactive Music Video</title>
+
+<!-- script import -->
+<script type="text/javascript"
+	src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script type="text/javascript" src="js/manipulator.js"></script>
+<script type="text/javascript" src="js/imageimporter.js"></script>
+
+<!-- styling -->
+<link href='http://fonts.googleapis.com/css?family=PT+Mono' rel='stylesheet' type='text/css'>
+<link rel="stylesheet" type="text/css" href="css/main.css">
+
+<!-- analytics -->
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-54192089-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+<!-- /analytics -->
+
+</head>
+
+<body onload="setup();">
+	<section id="content">
+		<div id="gameo">
+			<!-- GET THIS VIDEO TO START NOT AT 1 -->
+			<audio id="song" src="media/01Manipulator.mp3" type="video/mp3" preload="auto"></audio>
+			
+			<video id="video1" width="350" height="330" preload="auto">
+				<source src="media/ty_sit.mp4" type="video/mp4">
+				<source src="media/ty_sit.oggtheora.ogv" type="video/ogg">
+				<source src="media/ty_sit.webmhd.webm" type="video/webm">
+			</video>
+			<video id="video2" width="1280" height="720" preload="auto">
+				<source src="media/ty_face.mp4" type="video/mp4">
+				<source src="media/ty_face.oggtheora.ogv" type="video/ogg">
+				<source src="media/ty_face.webmhd.webm" type="videowebm">
+			</video>
+			<video id="video3" width="760" height="428" preload="auto">
+				<source src="media/ty_stand_flatrim.mp4" type="video/mp4">
+				<source src="media/ty_stand_flatrim.oggtheora.ogv" type="video/ogg">
+				<source src="media/ty_stand_flatrim.webmhd.webm" type="video/webm">
+			</video>
+			
+			<!-- END TRANSITION VIDEO -->
+			<video id="videoFist" width="1422" height="800" preload="auto">
+				<source src="media/FistWipe.mp4" type="video/mp4">
+				<source src="media/FistWipe.oggtheora.ogv" type="video/ogg">
+				<source src="media/FistWipe.webmhd.webm" type="video/webm">
+			</video>
+			
+			<!-- VIDEOS TO PLAY ON THE TV -->
+			<video id="tv1" width="186" height="140" preload="auto">
+				<source src="media/tv/boop-trim.mp4" type="video/mp4">
+				<source src="media/tv/boop-trim.oggtheora.ogv" type="video/ogg">
+				<source src="media/tv/boop-trim.webmhd.webm" type="webm">
+			</video>
+			
+			<video id="tv2" width="186" height="140" preload="auto">
+				<source src="media/tv/felix-trim2.mp4" type="video/mp4">
+				<source src="media/tv/felix-trim2.oggtheora.ogv" type="video/ogg">
+				<source src="media/tv/felix-trim2.webmhd.webm" type="video/webm">
+			</video>
+			
+			<video id="tv3" width="186" height="140" preload="auto">
+				<source src="media/tv/heart-trim.mp4" type="video/mp4">
+				<source src="media/tv/heart-trim.oggtheora.ogv" type="video/ogg">
+				<source src="media/tv/heart-trim.webmhd.webm" type="video/webm">
+			</video>
+			
+			<video id="tv4" width="186" height="140" preload="auto">
+				<source src="media/tv/leary-trim.mp4" type="video/mp4">
+				<source src="media/tv/leary-trim.oggtheora.ogv" type="video/ogg">
+				<source src="media/tv/leary-trim.webmhd.webm" type="video/webm">
+			</video>
+			
+			<video id="tv5" width="186" height="140" preload="auto">
+				<source src="media/tv/wwii-trim2.mp4" type="video/mp4">
+				<source src="media/tv/wwii-trim2.oggtheora.ogv" type="video/ogg">
+				<source src="media/tv/wwii-trim2.webmhd.webm" type="video/webm">
+			</video>
+			
+			<!-- background -->
+			<canvas id="canvasBG" width="1200" height="800" style="background:#000"></canvas>
+
+			<!-- insert movie clip here -->
+			<canvas id="canvasM1" width="350" height="330"></canvas>
+			<canvas id="canvasM2" width="1000" height="443"></canvas>
+			<canvas id="canvasM3" width="270" height="550"></canvas>
+			<canvas id="canvasTV" width="175" height="140"></canvas>
+			<!-- end movie clip here -->
+
+			<!-- foreground -->
+			<canvas id="canvasFG" width="1200" height="800"></canvas>
+			
+			<!-- transition canvas -->
+			<canvas id="canvasTransition" width="1200" height="800"></canvas>
+			<canvas id="canvasVT" width="1200" height="800"></canvas>
+			
+			<!-- menu canvas and curtains and stuff -->
+			<canvas id="canvasMenu" width="1200" height="800"></canvas>
+			
+			<!-- this canvas detects mouceclicks -->
+			<canvas id="canvasC" width="1200" height="800"></canvas>
+			
+			<!-- loading screen -->
+			<img id="loadingScreen" src="images/LoadingScreen.gif" width="1200" height="800" />
+			
+			<div id="frame"></div>
+		</div>
+		
+	</section>
+	<section id="credits">
+		<section id="header">
+			<aside id="buy">
+				<a href="http://www.dragcity.com/products/manipulator" target="_blank">buy the album.</a>
+			</aside>
+			<aside id="social">
+				<div class="facebook">
+				<div class="fb-like" data-href="http://www.ty-segall.com/manipulator/" data-layout="button" data-action="like" data-show-faces="false" data-share="false"></div>
+				</div>
+				
+				<div class="twitter">
+				<a href="https://twitter.com/share" class="twitter-share-button" data-url="http://www.ty-segall.com/manipulator/" data-text="Play Ty Segall's interactive music video for #manipulator" data-count="none" data-hashtags="tysegall">Tweet</a>
+				</div>
+			</aside>
+		</section>
+		<center>
+		<h1>MANIPULATOR</h1>
+		<p>song by <a href="http://www.ty-segall.com" target="_blank">Ty Segall</a>.<br />
+		<a href="http://www.dragcity.com" target="_blank">Drag City Records</a>
+		</p>
+		
+		<p>music video by.<br />
+			<a href="http://vimeo.com/mattyoka" target="_blank">Matt Yoka</a> (director)<br />
+			<a href="http://www.simonwiscombe.com" target="_blank">Simon Wiscombe</a> (designer/coder)
+		</p>
+		
+		<p class="help">Produced By<br />
+			Sammy Hamed.</p>
+		<p class="help">With Production Assistance from.<br />
+			Malika Lim<br />
+			Peter Tschann-Grimm<br />
+			Chris Greer<br />
+			Denee P&eacute;tracek<br />
+			Larissa Grant<br />
+			Tim Sheedy<br />
+			Tiffany Chow
+		</p>
+		</center>
+	</section>
+	
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.0";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+			
+</body>
+</html>
