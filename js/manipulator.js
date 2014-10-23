@@ -4,10 +4,7 @@
  * 2014
  * Designer/Code: 	Simon Wiscombe
  * Director:		Matt Yoka
- * Art:				Simon Wiscombe
- * 					Matt Yoka
- * 					Malika Prisarojn
- * Song: 			"Manipulator", Ty Segall
+ * Song: 		"Manipulator", Ty Segall
  * 
  */
 
@@ -139,6 +136,11 @@ function setup() {
 //	audio.load();
 
 	//VIDEO ELEMENTS
+	/*
+	For each video file, you need to (1) have a canvas dedicated to it and (2) you need to add an event listener
+	that calls a filtering effect on the file. Since each of the video files had a slightly different color
+	pattern, I needed to make a different one for each.
+	*/
 	video1 = document.getElementById('video1');
 	video1.autoplay = false;
 	video1.addEventListener("play", filterEffect1, false);
@@ -155,7 +157,12 @@ function setup() {
 	videoFist.autoplay = false;
 	videoFist.addEventListener("play", filterEffectTrans, false);
 	videoFist.loop = false;
-
+	
+	// Each TV video file.
+	/*
+	Unlike the video files above, these don't need a filter placed on them, but I did need to know
+	when they were playing so I added an event listener to each of them.
+	*/
 	tv1 = document.getElementById('tv1');
 	tv1.autoplay = false;
 	tv1.loop = true;
@@ -185,11 +192,6 @@ function setup() {
 	tv5.volume = 0;
 	tv5.loop = true;
 	tv5.addEventListener("play", renderTV5, false);
-	
-	// video loading event listeners
-	// TODO: Add this better loading check.
-//	video1.addEventListener('canplaythrough', function() { IsReady("video1") }, false);
-//	video1.addEventListener('canplaythrough', function() { IsReady("video2") }, false);
 
 	// CANVAS ELEMENTS. GETTING THEM.
 	canvasBGelement = document.getElementById('canvasBG');
@@ -220,6 +222,8 @@ function setup() {
 	hasTrans01 = false;
 
 	// ADD MOUSE EVENT LISTENER TO CLICK CANVAS.
+	// So I know where on the screen the user is clicking. If you look at the HTML file, you can
+	// see that this CLICK canvas is on the top layer. 
 	canvasCelement.addEventListener("click", mouseClicked, false);
 	window.addEventListener("keypress", keyPressed, false );
 
@@ -234,36 +238,30 @@ function setup() {
 	isPlaying = false;
 	playSection = 0;
 	menuSection = 0;
-
+	
+	// SETTING THE FRAME RATE
+	// Note that this won't be exactly 24 fps since 1000/24 isn't an even number, but it
+	// was approximate enough. None of the things that need to be video synced rely on this.
 	setInterval(function() {
 		update();
 		draw();
 	}, 1000/FPS);
 
-	// IMAGE FILE INITIALIZATION
+	// IMAGE FILE INITIALIZATION - See imageimporter.js.
 	initImages();
 }
 
 ////IMAGE FILES ///////// --> moved to imageimporter.js
 
 function filterEffect1() {
-//	vidRender1.height = CANVAS_HEIGHT;
-//	vidRender1.width = CANVAS_WIDTH;
-
 	renderCanvas1(video1);
 }
 
 function filterEffect2() {
-//	vidRender2.height = CANVAS_HEIGHT;
-//	vidRender2.width = CANVAS_WIDTH;
-
 	renderCanvas2(video2);
 }
 
 function filterEffect3() {
-//	vidRender3.height = CANVAS_HEIGHT;
-//	vidRender3.width = CANVAS_WIDTH;
-
 	renderCanvas3(video3);
 }
 
@@ -271,46 +269,57 @@ function filterEffectTrans() {
 	renderCanvasT(videoFist);
 }
 
+// THE RENDER CANVAS FUNCTIONS.
+/*
+Each renderCanvasX function is very similar to the others, so I'll only comment one. 
+*/
 function renderCanvas1(vid) {
+	// Don't run this script if the video is paused.
 	if ( vid.paused || vid.embed ) return false;
+	
+	// Step 1: Draw the video frame onto the canvas.
 	vidR1ctx.drawImage(vid,0,0);
+	
+	// Step 2: Pull the image data from said canvas.
 	var vidData = vidR1ctx.getImageData(0,0,vidRender1.width, vidRender1.height);
-
+	
+	// Step 3: Go pixel by pixel and detect whether or not we're at the green screen.
 	for ( var i=0; i<vidData.data.length; i+=4 ) {
 		var makeTrans = false;
 
-		// if green is super high, filter it out.
+		// if green is super high, filter it out, since it's green screen.
 		if ( vidData.data[i+1] > 230 ) {
 			makeTrans = true;
 		}
-		// if green is high, check other colors.
+		// if green is high but not super high, check other colors.
 		else if ( vidData.data[i+1] > 100 ) {
-			// if the ratio of the average of green to the other colors is > 1.7, make trans.
+			// if the ratio of the average of green to the other colors is > 1.7, it's green screen.
 			if ( vidData.data[i+1]/((vidData.data[i]+vidData.data[i+2])/2) > 1.7 ) {
 				makeTrans = true;
 			}
-			// left side filter.
+			// left side filter, since there is color blending at the edges of Ty.
 			if ( vidData.data[i+1] > 130 && vidData.data[i-1]==0 ) {
 				makeTrans = true;
 			}
-			// right side filter.
+			// right side filter, for the same reason.
 			if ( vidData.data[i+1] > 130 && (vidData.data[i+5]/((vidData.data[i+4]+vidData.data[i+6])/2) > 1.6 || vidData.data[i+5] > 230) ) {
 				makeTrans = true;
 			}
 		}
-//		else if ( vidData.data[i] + vidData.data[i+1] + vidData.data[i+2] < 20 ) {
-//		makeTrans = true;
-//		}
+		// Otherwise, reduce the overall green of that pixel. The green bounced back onto his face
+		// during filming, the colors blended, etc. Basically reduce the green effect.
 		else {
 			vidData.data[i+1] *= 0.7;
 		}
-
+		
+		// Make transparent the green screen pixel.
 		if ( makeTrans ) { vidData.data[i+3] = 0; }
 	}
-
+	
+	// Step 4: Render the modified image data back onto the canvas.
 	vidR1ctx.putImageData(vidData,0,0);
 
-
+	// Restart the function.
 	setTimeout(function(){
 		renderCanvas1(vid);
 	}, 20);
